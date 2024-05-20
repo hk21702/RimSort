@@ -23,7 +23,7 @@ on:
         type: number
         required: false
       update_release:
-        description: "If an existing non-draft release exists, update it instead of failing. (Danger!)"
+        description: "Allow update existing non-draft stable release. (Danger!)"
         type: boolean
         default: false
         required: false
