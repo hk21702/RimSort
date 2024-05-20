@@ -30,32 +30,8 @@ _NUITKA_CMD = [
     PY_CMD,
     "-m",
     "nuitka",
-    "--assume-yes-for-downloads",
-    "--standalone",
-    "--enable-plugin=pyside6",
-    "--include-data-file=./update.sh=update.sh",
-    "--include-data-file=./update.sh=update.bat",
-    "--include-data-file=./steam_appid.txt=steam_appid.txt",
-    "--include-package=steamworks",
-    "--user-package-configuration-file=./rimsort.nuitka-package.config.yml",
-    "--noinclude-default-mode=error",
-    "--disable-console",
-    "--macos-create-app-bundle",
-    "--macos-app-icon=./themes/default-icons/AppIcon_a.icns",
-    "--windows-icon-from-ico=./themes/default-icons/AppIcon_a.png",
+    "app/__main__.py",
 ]
-
-# If version.xml exists in root, add it to the Nuitka command
-if os.path.exists("version.xml"):
-    _NUITKA_CMD.append("--include-data-file=./version.xml=version.xml")
-
-_NUITKA_CMD.extend(
-    [
-        "app/__main__.py",
-        "--output-dir=./build/",
-        "--output-filename=RimSort",
-    ]
-)
 
 print(f"Running on {_SYSTEM} {_ARCH} {_PROCESSOR}...")
 
