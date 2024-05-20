@@ -17,7 +17,7 @@
   "python.terminal.activateEnvInCurrentTerminal": true,
   "mypy.runUsingActiveInterpreter": true,
   "editor.codeActionsOnSave": {
-    "source.organizeImports": true
+    "source.organizeImports": "explicit"
   },
   "autoDocstring.docstringFormat": "sphinx",
   "cSpell.words": ["joseasoler", "rimsort"],
