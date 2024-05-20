@@ -1,12 +1,13 @@
+#!/usr/bin/env python3
 """
 This script is used to set up the environment and build the RimSort application.
 It installs the required dependencies, initializes and updates submodules, and compiles the SteamworksPy library.
 The script supports different operating systems and architectures.
 
 For arguments and usage, run the script with the --help flag.
-"""
 
-#!/usr/bin/env python3
+Not meant to be imported as a module.
+"""
 
 
 import argparse
@@ -400,9 +401,7 @@ def get_latest_todds_release() -> None:
 
 
 def freeze_application() -> None:
-    # Nuitka
-    print(f"Running on {_SYSTEM} {_ARCH} {_PROCESSOR}...")
-
+    """Build the RimSort application using Nuitka."""
     # Check if NUITKA_CACHE_DIR exists in environment
     if "NUITKA_CACHE_DIR" in os.environ:
         print(f"NUITKA_CACHE_DIR: {os.environ['NUITKA_CACHE_DIR']}")
@@ -433,7 +432,12 @@ def handle_request(
 
 
 def make_args() -> argparse.ArgumentParser:
-    # Create the parser
+    """
+    Create and configure the argument parser for the RimSort application setup script.
+
+    Returns:
+        argparse.ArgumentParser: The configured argument parser.
+    """
     description = """This script is used to set up the environment and build the RimSort application.
     It installs the required dependencies, initializes and updates submodules, and compiles the SteamworksPy library.
     The script supports different operating systems and architectures."""
