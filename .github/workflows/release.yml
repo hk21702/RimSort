@@ -150,18 +150,19 @@ jobs:
         id: artifacts
         run: |
           cd artifacts
-          rootname=RimSort
-          if [[ $name == *"Darwin"* ]]; then
-            rootname=RimSort.app
-          fi
           for artifact in ./*; do
             file=${artifact##*/} 
             base="${file%%.*}"
-            echo "Zipping $artifact to RimSort-${{ steps.version.outputs.version }}-$base.zip"
+            name=RimSort-${{ steps.version.outputs.version }}-$base.zip
+            rootname=RimSort
+            if [[ $name == *"Darwin"* ]]; then
+              rootname=RimSort.app
+            fi
+            echo "Zipping $artifact to $name"
             cd "$artifact"
             tar -xvf "${file}.tar"
             mv "output" "$rootname"
-            zip -rmq "../RimSort-${{ steps.version.outputs.version }}-$base.zip" "$rootname" &
+            zip -rmq "../$name" "$rootname" &
             cd ..
           done
           wait
@@ -201,7 +202,7 @@ jobs:
           draft: ${{ github.event.inputs.draft }}
           body: ${{ steps.body.outputs.body }}
           allowUpdates: true
-          updateOnlyUnreleased: ${{ inputs.update_release }}
+          updateOnlyUnreleased: ${{ !inputs.update_release }}
           omitNameDuringUpdate: ${{ inputs.omit_name_during_update }}
           omitBodyDuringUpdate: ${{ inputs.omit_body_during_update }}
           removeArtifacts: true
