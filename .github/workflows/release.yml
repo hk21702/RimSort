@@ -109,7 +109,7 @@ jobs:
           if [[ "${{ github.event.inputs.type }}" == "Stable" ]]; then
             tag="${{steps.version.outputs.version}}"
           elif [[ "${{ github.event.inputs.type }}" == "Edge" ]]; then
-            tag="Edge-${{steps.version.outputs.version}}"
+            tag="Edge"
           else
             echo "Unknown type: ${{ github.event.inputs.type }}"
             exit 1
@@ -169,6 +169,7 @@ jobs:
         if: ${{ github.event.inputs.type == 'Edge' }}
         run: |
           gh release delete Edge -y
+          git tag -d Edge
         shell: bash
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
