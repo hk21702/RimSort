@@ -23,7 +23,7 @@ on:
         type: number
         required: false
       update_release:
-        description: "Allow update existing non-draft stable release. (Danger!)"
+        description: "Allow updating existing non-draft stable release. (Danger!)"
         type: boolean
         default: false
         required: false
