@@ -158,7 +158,6 @@ jobs:
             file=${artifact##*/} 
             base="${file%%.*}"
             echo "Zipping $artifact to RimSort-${{ steps.version.outputs.version }}-$base.zip"
-            ls
             cd "$artifact"
             tar -xvf "${file}.tar"
             mv "output" "$rootname"
