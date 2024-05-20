@@ -11,11 +11,11 @@ on:
           - "Stable"
           - "Edge"
       draft:
-        description: "Only create a draft release"
+        description: "Draft release"
         type: boolean
         default: true
       skip_build:
-        description: "Skip the build step"
+        description: "Skip build step"
         type: boolean
         default: false
       run_id:
@@ -23,17 +23,17 @@ on:
         type: number
         required: false
       update_release:
-        description: "Allow updating existing non-draft stable release. (Danger!)"
+        description: "(Danger!) Allow updating non-draft stable release"
         type: boolean
         default: false
         required: false
       omit_name_during_update:
-        description: "Don't override name if updating a release"
+        description: "Don't override name if updating"
         type: boolean
         default: true
         required: false
       omit_body_during_update:
-        description: "Don't override body if updating a release"
+        description: "Don't override body if updating"
         type: boolean
         default: true
         required: false
