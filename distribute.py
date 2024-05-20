@@ -46,10 +46,9 @@ else:
     print("Exiting...")
 GET_REQ_CMD = [PY_CMD, "-m", "pip", "install", "-r", "requirements.txt"]
 GET_REQ_CMD_BUILD = [PY_CMD, "-m", "pip", "install", "-r", "requirements_build.txt"]
-STEAMFILES_BUILD_CMD = [PY_CMD, "setup.py", "install"]
 STEAMFILES_SRC = os.path.join(_CWD, "submodules", "steamfiles")
+STEAMFILES_BUILD_CMD = [PY_CMD, "-m", "pip", "install", STEAMFILES_SRC]
 SUBMODULE_UPDATE_INIT_CMD = ["git", "submodule", "update", "--init", "--recursive"]
-
 
 def get_rimsort_pip(skip_build: bool = False) -> None:
     print("Installing core RimSort requirements with pip...")
@@ -65,12 +64,8 @@ def get_rimsort_submodules() -> None:
     _execute(SUBMODULE_UPDATE_INIT_CMD)
     # Get Steamfiles requirements
     print("Building submodules...")
-    print(f"Changing directory to {STEAMFILES_SRC}")
-    os.chdir(STEAMFILES_SRC)
     print("Building steamfiles module...")
     _execute(STEAMFILES_BUILD_CMD)
-    print(f"Leaving {STEAMFILES_SRC}")
-    os.chdir(_CWD)
 
 
 def build_steamworkspy() -> None:
