@@ -165,7 +165,7 @@ jobs:
             zip -rmq "../RimSort-${{ steps.version.outputs.version }}-$base.zip" "$rootname" &
             cd ..
           done
-          wait -p
+          wait
           echo "Cleaning up - Removing non-zip files"
           shopt -s extglob
           rm -rf !(*.zip)
