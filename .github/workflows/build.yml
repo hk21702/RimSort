@@ -142,6 +142,8 @@ jobs:
             ${{ steps.sem_version.outputs.patch }}.
             ${{ steps.sem_version.outputs.increment }}
           file-description: "An open source RimWorld mod manager."
+          include-data-files: |
+            version.xml=version.xml
         env:
           PYTHONPATH: ${{ steps.pythonpath.outputs.PYTHONPATH }}
 
