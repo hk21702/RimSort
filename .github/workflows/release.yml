@@ -146,27 +146,29 @@ jobs:
           run-id: ${{ github.event.inputs.run_id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Rename artifacts and zip to versioned file. Add execute permissions
+      - name: Rename artifacts and zip to versioned file
         id: artifacts
         run: |
           cd artifacts
+          rootname=RimSort
+          if [[ $name == *"Darwin"* ]]; then
+            rootname=RimSort.app
+          fi
           for artifact in ./*; do
             file=${artifact##*/} 
             base="${file%%.*}"
-            echo "Renaming $artifact to RimSort-${{ steps.version.outputs.version }}-$base.zip"
-            rootname=RimSort
-            if [[ $name == *"Darwin"* ]]; then
-              rootname=RimSort.app
-            fi
-            ls -la
+            echo "Zipping $artifact to RimSort-${{ steps.version.outputs.version }}-$base.zip"
+            ls
             cd "$artifact"
             tar -xvf "${file}.tar"
             mv "output" "$rootname"
-            zip -r "../RimSort-${{ steps.version.outputs.version }}-$base.zip" "$rootname"
+            zip -rmq "../RimSort-${{ steps.version.outputs.version }}-$base.zip" "$rootname" &
             cd ..
-            rm -rf "$artifact" "$rootname"
           done
-          ls -la
+          wait -p
+          echo "Cleaning up - Removing non-zip files"
+          shopt -s extglob
+          rm -rf !(*.zip)
         shell: bash
 
       - name: Create body
