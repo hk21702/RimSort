@@ -67,7 +67,7 @@
   - `cd steamfiles`
   - `pip install -r requirements.txt`
 
-### Using SteamworksPy binaries:
+### Using SteamworksPy binaries
 
 - You can setup this module using the following commands:
 
@@ -79,7 +79,7 @@
   - On Linux, you will want to copy `SteamworksPy_*.so` (where \* is your CPU) to `SteamworksPy.so`
   - On MacOS, you will want to copy `SteamworksPy_*.dylib` (where \* is your CPU) to `SteamworksPy.dylib`
 
-### Building SteamworksPy from source:
+### Building SteamworksPy from source
 
 This is an _**OPTIONAL**_ step. You do not _**NEED**_ to do this - there are already pre-built binaries available for usage in-repo as well as in each platform's respective release. Please do not attempt to commit/PR an update for these binaries without maintainer consent - these will not be approved otherwise.
 
