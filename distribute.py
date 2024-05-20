@@ -1,4 +1,13 @@
+"""
+This script is used to set up the environment and build the RimSort application.
+It installs the required dependencies, initializes and updates submodules, and compiles the SteamworksPy library.
+The script supports different operating systems and architectures.
+
+For arguments and usage, run the script with the --help flag.
+"""
+
 #!/usr/bin/env python3
+
 
 import argparse
 import os
@@ -33,8 +42,6 @@ _NUITKA_CMD = [
     "app/__main__.py",
 ]
 
-print(f"Running on {_SYSTEM} {_ARCH} {_PROCESSOR}...")
-
 if _SYSTEM == "Darwin" and _PROCESSOR in ["i386", "arm"]:
     pass
 elif _SYSTEM == "Linux":
@@ -44,28 +51,35 @@ elif _SYSTEM == "Windows" and _ARCH == "64bit":
 else:
     print(f"Unsupported SYSTEM: {_SYSTEM} {_ARCH} with {_PROCESSOR}")
     print("Exiting...")
+
 GET_REQ_CMD = [PY_CMD, "-m", "pip", "install", "-r", "requirements.txt"]
-GET_REQ_CMD_BUILD = [PY_CMD, "-m", "pip", "install", "-r", "requirements_build.txt"]
-STEAMFILES_SRC = os.path.join(_CWD, "submodules", "steamfiles")
-STEAMFILES_BUILD_CMD = [PY_CMD, "-m", "pip", "install", STEAMFILES_SRC]
+
+REQUIREMENTS_FILES = {
+    "main": "requirements.txt",
+    "build": "requirements_build.txt",
+    "dev": "requirements_develop.txt",
+}
 SUBMODULE_UPDATE_INIT_CMD = ["git", "submodule", "update", "--init", "--recursive"]
 
-def get_rimsort_pip(skip_build: bool = False) -> None:
-    print("Installing core RimSort requirements with pip...")
-    _execute(GET_REQ_CMD)
 
-    if not skip_build:
-        print("Installing RimSort build requirements with pip...")
-        _execute(GET_REQ_CMD_BUILD)
+def get_rimsort_pip(build: bool = False, dev: bool = False) -> None:
+    print("Installing core RimSort requirements")
+    command = [PY_CMD, "-m", "pip", "install", "-r", REQUIREMENTS_FILES["main"]]
+
+    if build:
+        print("Will install RimSort build requirements")
+        command.extend(["-r", REQUIREMENTS_FILES["build"]])
+
+    if dev:
+        print("Will install RimSort development requirements")
+        command.extend(["-r", REQUIREMENTS_FILES["dev"]])
+
+    _execute(command)
 
 
 def get_rimsort_submodules() -> None:
     print("Ensuring we have all submodules initiated & up-to-date...")
     _execute(SUBMODULE_UPDATE_INIT_CMD)
-    # Get Steamfiles requirements
-    print("Building submodules...")
-    print("Building steamfiles module...")
-    _execute(STEAMFILES_BUILD_CMD)
 
 
 def build_steamworkspy() -> None:
@@ -420,53 +434,63 @@ def handle_request(
 
 def make_args() -> argparse.ArgumentParser:
     # Create the parser
-    parser = argparse.ArgumentParser(description="Distribute RimSort")
+    description = """This script is used to set up the environment and build the RimSort application.
+    It installs the required dependencies, initializes and updates submodules, and compiles the SteamworksPy library.
+    The script supports different operating systems and architectures."""
 
-    # Skip dependencies
+    parser = argparse.ArgumentParser(description=description)
     parser.add_argument(
-        "--skip-pip",
+        "-d",
+        "--dev",
         action="store_true",
-        help="Skip installing RimSort pip requirements",
+        help="enables dev mode, installing dev requirements and enables application console if applicable",
     )
 
     parser.add_argument(
         "--skip-submodules",
         action="store_true",
-        help="Skip installing RimSort submodules",
+        help="skip installing RimSort submodules using git",
+    )
+
+    # Skip dependencies
+    parser.add_argument(
+        "--skip-pip",
+        action="store_true",
+        help="skip installing RimSort pip requirements",
     )
 
     # Skip SteamworksPy Copy
     parser.add_argument(
         "--skip-steamworkspy",
         action="store_true",
-        help="Skip copying SteamworksPy library",
+        help="skip copying SteamworksPy library",
     )
 
-    # Skip SteamworksPy
+    # Enable SteamworksPy build
     parser.add_argument(
         "--build-steamworkspy",
         action="store_true",
-        help="Building SteamworksPy library instead of copying it",
+        help="build SteamworksPy instead of copying it",
     )
 
     # Skip todds
     parser.add_argument(
         "--skip-todds",
         action="store_true",
-        help="Skip grabbing latest todds release",
+        help="skip grabbing latest todds release",
     )
 
     # Don't build
     parser.add_argument(
         "--skip-build",
         action="store_true",
-        help="Skip building RimSort application with Nuitka",
+        help="skip building RimSort with Nuitka",
     )
 
     parser.add_argument(
         "--product-version",
         type=str,
-        help="Product version to use for the build. Formatted as MAJOR.MINOR.PATCH.INCREMENT",
+        help="product version to use for the build formatted as MAJOR.MINOR.PATCH.INCREMENT",
         required=False,
     )
 
@@ -477,25 +501,27 @@ def main() -> None:
     # Parse arguments
     parser = make_args()
     args = parser.parse_args()
+    build = not args.skip_build
 
-    # RimSort dependencies
-    if not args.skip_pip:
-        print("Getting RimSort python requirements...")
-        get_rimsort_pip(args.skip_build)
-    else:
-        print("Skipping getting python pip requirements...")
-
+    print(f"Running on {_SYSTEM} {_ARCH} {_PROCESSOR}...")
     if not args.skip_submodules:
         print("Getting RimSort submodules...")
         get_rimsort_submodules()
     else:
-        print("Skipping getting submodules...")
+        print("Skipped getting submodules")
+
+    # RimSort dependencies
+    if not args.skip_pip:
+        print("Getting RimSort python requirements...")
+        get_rimsort_pip(build=build, dev=args.dev)
+    else:
+        print("Skipped getting python pip requirements")
 
     if args.build_steamworkspy:
         print("Building SteamworksPy library. Skipping copy...")
         build_steamworkspy()
     elif not args.skip_steamworkspy:
-        print("Copying SteamworksPy library...")
+        print("Copying SteamworksPy library")
         copy_swp_libs()
 
     # Grab latest todds release
@@ -503,7 +529,7 @@ def main() -> None:
         print("Grabbing latest todds release...")
         get_latest_todds_release()
     else:
-        print("Skipping todds release...")
+        print("Skipped todds release")
 
     # Build Nuitka distributable binary
     if not args.skip_build:
@@ -515,11 +541,14 @@ def main() -> None:
                     f"--product-version={version}",
                 ]
             )
+        if args.dev:
+            print("In dev mode, enabling console in build")
+            _NUITKA_CMD.append("--enable-console")
 
         print("Building RimSort application with Nuitka...")
         freeze_application()
     else:
-        print("Skipping distribute.py build...")
+        print("Skipped distribute.py build")
 
 
 if __name__ == "__main__":
