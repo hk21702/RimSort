@@ -79,7 +79,7 @@ jobs:
         id: tag
         run: |
           if [[ "${{ github.event.inputs.type }}" == "Stable" ]]; then
-            tag="${{needs.pre-build.outputs.version}}"
+            tag="${{needs.pre-build.outputs.version_tag}}"
           elif [[ "${{ github.event.inputs.type }}" == "Edge" ]]; then
             tag="Edge"
           else
@@ -88,6 +88,9 @@ jobs:
           fi
           echo "tag=$tag" >> "$GITHUB_OUTPUT"
         shell: bash
+
+      - name: Install Dasel
+        run: brew install dasel
 
       - name: Download artifacts - Current Flow
         if: ${{ inputs.skip_build == false }}
@@ -115,11 +118,18 @@ jobs:
             if [[ $base == *"Darwin"* ]]; then
               rootname=RimSort.app
             fi
-            echo "Zipping $artifact to $name"
+            echo "Will zip $artifact to $name"
             echo "Rootname $rootname"
             cd "$artifact"
             tar -xvf "${file}.tar"
             mv "output" "$rootname"
+            echo "Doing commit match check."
+            version_xml="$(find $rootname -name version.xml)"
+            commit=$(dasel -f $version_xml -r xml 'version.commit')
+            if [[ $commit != ${{  needs.pre-build.outputs.current_commit }} ]]; then
+              echo "Commit mismatch. Expected ${{  needs.pre-build.outputs.current_commit }} but got true build commit was $commit"
+              exit 1
+            fi
             zip -rmqq "../$name" "$rootname" &
             cd ..
           done
