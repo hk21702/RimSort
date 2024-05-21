@@ -112,7 +112,7 @@ jobs:
           cd artifacts
           for artifact in ./*; do
             file=${artifact##*/} 
-            base="${file%%.*}"
+            base=${file%%.*}
             name=RimSort-${{ needs.pre-build.outputs.version }}-$base.zip
             rootname=RimSort
             if [[ $base == *"Darwin"* ]]; then
@@ -125,9 +125,9 @@ jobs:
             mv "output" "$rootname"
             echo "Doing commit match check."
             version_xml="$(find $rootname -name version.xml)"
-            commit=$(dasel -f $version_xml -r xml 'version.commit')
+            commit="$(dasel -f $version_xml -r xml 'version.commit')"
             if [[ $commit != ${{  needs.pre-build.outputs.current_commit }} ]]; then
-              echo "Commit mismatch. Expected ${{  needs.pre-build.outputs.current_commit }} but got true build commit was $commit"
+              echo "Commit mismatch. Expected ${{  needs.pre-build.outputs.current_commit }} but true build commit was $commit"
               exit 1
             fi
             zip -rmqq "../$name" "$rootname" &
