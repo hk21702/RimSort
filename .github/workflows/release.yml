@@ -15,7 +15,7 @@ on:
         type: boolean
         default: true
       skip_build:
-        description: "Skip build step"
+        description: "Skip build/test step"
         type: boolean
         default: false
       run_id:
@@ -38,7 +38,7 @@ on:
         default: false
         required: false
       no_commit_match:
-        description: "Ignore commit match check errors"
+        description: "Ignore commit match errors"
         type: boolean
         default: false
         required: false
@@ -118,7 +118,7 @@ jobs:
           for artifact in ./*; do
             file=${artifact##*/} 
             base=${file%%.*}
-            name=RimSort-${{ needs.pre-build.outputs.version }}-$base.zip
+            name="RimSort-${{ needs.pre-build.outputs.version }}-$base.zip"
             rootname=RimSort
             if [[ $base == *"Darwin"* ]]; then
               rootname=RimSort.app
