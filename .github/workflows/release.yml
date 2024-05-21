@@ -37,6 +37,11 @@ on:
         type: boolean
         default: false
         required: false
+      no_commit_match:
+        description: "Ignore commit match check errors"
+        type: boolean
+        default: false
+        required: false
 
 permissions: {}
 
@@ -89,8 +94,8 @@ jobs:
           echo "tag=$tag" >> "$GITHUB_OUTPUT"
         shell: bash
 
-      - name: Install Dasel
-        run: brew install dasel
+      - name: Install xmlstarlet
+        run: sudo apt-get install -y xmlstarlet
 
       - name: Download artifacts - Current Flow
         if: ${{ inputs.skip_build == false }}
@@ -124,11 +129,15 @@ jobs:
             tar -xvf "${file}.tar"
             mv "output" "$rootname"
             echo "Doing commit match check."
-            version_xml="$(find $rootname -name version.xml)"
-            commit=$(dasel -f $version_xml -r xml 'version.commit')
-            if [[ "$commit" != ${{  needs.pre-build.outputs.current_commit }} ]]; then
-              echo "Commit mismatch. Expected ${{  needs.pre-build.outputs.current_commit }} but true build commit was $commit"
-              exit 1
+            version_xml=$(find $rootname -name version.xml)
+            commit=$(xmlstarlet sel -t -v "//commit" $version_xml)
+            if [[ "$commit" != "${{  needs.pre-build.outputs.current_commit }}" ]]; then
+              echo "Commit mismatch for artifact $artifact. Expected ${{  needs.pre-build.outputs.current_commit }} but true build commit was $commit"
+              if [[ "${{ inputs.no_commit_match }}" == true ]]; then
+                echo "Ignoring commit mismatch and continuing."
+              else
+                exit 1
+              fi
             fi
             zip -rmqq "../$name" "$rootname" &
             cd ..
