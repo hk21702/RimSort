@@ -162,9 +162,10 @@ jobs:
             cd "$artifact"
             tar -xvf "${file}.tar"
             mv "output" "$rootname"
-            zip -rmq "../$name" "$rootname" &
+            zip -rmqq "../$name" "$rootname" &
             cd ..
           done
+          echo "Waiting for zips to finish"
           wait
           echo "Cleaning up - Removing non-zip files"
           shopt -s extglob
