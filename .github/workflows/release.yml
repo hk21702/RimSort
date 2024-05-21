@@ -129,8 +129,8 @@ jobs:
             tar -xvf "${file}.tar"
             mv "output" "$rootname"
             echo "Doing commit match check."
-            version_xml=$(find $rootname -name version.xml)
-            commit=$(xmlstarlet sel -t -v "//commit" $version_xml)
+            version_xml=$(find "$rootname" -name version.xml)
+            commit=$(xmlstarlet sel -t -v "//commit" "$version_xml")
             if [[ "$commit" != "${{  needs.pre-build.outputs.current_commit }}" ]]; then
               echo "Commit mismatch for artifact $artifact. Expected ${{  needs.pre-build.outputs.current_commit }} but true build commit was $commit"
               if [[ "${{ inputs.no_commit_match }}" == true ]]; then
